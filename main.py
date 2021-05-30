@@ -14,7 +14,7 @@ def build_text(anniversary) -> str:
     next_date = date.replace(year=date.year + 1)
     next_diff = next_date - today
 
-    return f">>>*{name}*\t{date.strftime('%Y-%m-%d')}\n\n*経過日数*\t\t{diff.days}日\n\n*記念日まで*\t{next_diff.days}日"
+    return f">>>*{name}*\t{date.strftime('%Y-%m-%d')}\n\n*経過日数*\t\t{diff.days}日\n\n*残り日数*\t\t{next_diff.days}日"
 
 
 def build_blocks(anniversaries) -> list:
