@@ -30,6 +30,8 @@ jobs:
       - name: Output env file
         run: echo "WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}" > .env
       - name: Decrypt json
+        env:
+          SECRET_PASSPHRASE: "${{ secrets.SECRET_PASSPHRASE }}"
         run: sh decrypt_secret.sh
       - name: run main
         env:
