@@ -138,3 +138,5 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+# 自分の記念日リスト
+anniversaries.json
