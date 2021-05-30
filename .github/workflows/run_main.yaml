@@ -34,6 +34,8 @@ jobs:
           pip install -r requirements.txt
       - name: Output env file
         run: echo "WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}" > .env
+      - name: Decrypt json
+        run: sh decrypt_secret.sh
       - name: run main
         run: python main.py "${{ github.event.inputs.type }}"
 
