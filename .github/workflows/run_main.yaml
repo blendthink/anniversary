@@ -33,7 +33,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
       - name: Output env file
-        run: echo "${{ secrets.WEBHOOK_URL }}" > .env
+        run: echo "WEBHOOK_URL=${{ secrets.WEBHOOK_URL }}" > .env
       - name: run main
         run: python main.py "${{ github.event.inputs.type }}"
 
