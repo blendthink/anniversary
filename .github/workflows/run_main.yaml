@@ -3,11 +3,6 @@ name: Run main.py
 on:
   workflow_dispatch:
     ref: main
-    inputs:
-      type:
-        description: 'wedding | etc..'
-        required: true
-        default: 'wedding'
 
 jobs:
   app:
@@ -39,4 +34,4 @@ jobs:
       - name: run main
         env:
           TZ: 'Asia/Tokyo'
-        run: python main.py "${{ github.event.inputs.type }}"
+        run: python main.py

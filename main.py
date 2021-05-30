@@ -1,4 +1,3 @@
-import argparse
 import json
 import datetime
 
@@ -6,34 +5,53 @@ import settings
 from slack_sdk.webhook import WebhookClient
 
 
-def build_message(anniversary) -> str:
-    if anniversary is None:
-        return '記念日を設定しましょ♪'
-
+def build_text(anniversary) -> str:
     today = datetime.date.today()
     name = anniversary["name"]
     tmp_date = datetime.datetime.strptime(anniversary["date"], '%Y-%m-%d')
     date = datetime.date(tmp_date.year, tmp_date.month, tmp_date.day)
-    if date > today:
-        return f"{name}に未来の日付が設定されちゃってる :pleading_face:"
-
     diff = today - date
-    return f"『{name}』から {diff.days}日たちました :smiling_face_with_3_hearts:"
+    next_date = date.replace(year=date.year + 1)
+    next_diff = next_date - today
+
+    return f">>>*{name}*\t{date.strftime('%Y-%m-%d')}\n\n*経過日数*\t\t{diff.days}日\n\n*記念日まで*\t{next_diff.days}日"
+
+
+def build_blocks(anniversaries) -> list:
+    blocks = [
+        {
+            "type": "image",
+            "image_url": "https://i.ytimg.com/vi/Mg8WdPJ_ATE/maxresdefault.jpg",
+            "alt_text": "anniversary"
+        }
+    ]
+    for anniversary in anniversaries:
+        text = {
+            "type": "section",
+            "text": {
+                "text": f"{build_text(anniversary)}",
+                "type": "mrkdwn"
+            }
+        }
+        blocks.append(text)
+
+    return blocks
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser()
-    parser.add_argument('type', help='wedding or .. etc')
-    args = parser.parse_args()
-
     anniversaries_file = open('anniversaries.json', 'r')
     anniversaries = json.load(anniversaries_file)
 
-    anniversary = next((item for item in anniversaries if item["key"] == args.type), None)
-
     webhook = WebhookClient(settings.WEBHOOK_URL)
-    message = build_message(anniversary)
-    response = webhook.send(text=message)
+
+    if not anniversaries:
+        response = webhook.send(text='記念日を設定しましょ♪')
+        assert response.status_code == 200
+        assert response.body == "ok"
+        return
+
+    blocks = build_blocks(anniversaries)
+    response = webhook.send(blocks=blocks)
     assert response.status_code == 200
     assert response.body == "ok"
 
