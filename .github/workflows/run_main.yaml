@@ -37,6 +37,6 @@ jobs:
       - name: Decrypt json
         run: sh decrypt_secret.sh
       - name: run main
+        env:
+          TZ: 'Asia/Tokyo'
         run: python main.py "${{ github.event.inputs.type }}"
-
-
