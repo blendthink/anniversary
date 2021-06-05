@@ -3,6 +3,10 @@ name: Run main.py
 on:
   workflow_dispatch:
     ref: main
+    inputs:
+      type:
+        description: 'first or next'
+        required: true
 
 jobs:
   app:
