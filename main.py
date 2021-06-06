@@ -12,7 +12,7 @@ def build_first_text(anniversary) -> str:
     tmp_date = datetime.datetime.strptime(anniversary["date"], '%Y-%m-%d')
     date = datetime.date(tmp_date.year, tmp_date.month, tmp_date.day)
     diff = today - date
-    return f'{name}から {diff} 日'
+    return f'{name}から {diff.days} 日'
 
 
 def build_next_text(anniversary) -> str:
@@ -22,7 +22,7 @@ def build_next_text(anniversary) -> str:
     date = datetime.date(tmp_date.year, tmp_date.month, tmp_date.day)
     next_date = date.replace(year=date.year + 1)
     next_diff = next_date - today
-    return f'{name}まで、あと {next_diff} 日'
+    return f'{name}まで、あと {next_diff.days} 日'
 
 
 def build_first_texts(anniversaries: list) -> str:
