@@ -1,11 +1,12 @@
 import argparse
-import json
 import datetime
+import json
 
-import settings
 from slack_sdk.webhook import WebhookClient
 
+import settings
 from data import Anniversary
+from decoder import decode_anniversary
 
 
 def build_first_text(anniversary: Anniversary) -> str:
@@ -74,7 +75,7 @@ def build_blocks(anniversaries: [Anniversary]) -> list:
 
 def main() -> None:
     anniversaries_file = open('anniversaries.json', 'r')
-    anniversaries = json.load(anniversaries_file, object_hook=Anniversary)
+    anniversaries: [Anniversary] = json.load(anniversaries_file, object_hook=decode_anniversary)
 
     webhook = WebhookClient(settings.WEBHOOK_URL)
 
