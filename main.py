@@ -5,27 +5,23 @@ import datetime
 import settings
 from slack_sdk.webhook import WebhookClient
 
+from data import Anniversary
 
-def build_first_text(anniversary) -> str:
+
+def build_first_text(anniversary: Anniversary) -> str:
     today = datetime.date.today()
-    name = anniversary["name"]
-    tmp_date = datetime.datetime.strptime(anniversary["date"], '%Y-%m-%d')
-    date = datetime.date(tmp_date.year, tmp_date.month, tmp_date.day)
-    diff = today - date
-    return f'{name}から {diff.days} 日'
+    diff = today - anniversary.date
+    return f'{anniversary.name}から {diff.days} 日'
 
 
-def build_next_text(anniversary) -> str:
+def build_next_text(anniversary: Anniversary) -> str:
     today = datetime.date.today()
-    name = anniversary["name"]
-    tmp_date = datetime.datetime.strptime(anniversary["date"], '%Y-%m-%d')
-    date = datetime.date(tmp_date.year, tmp_date.month, tmp_date.day)
-    next_date = date.replace(year=date.year + 1)
+    next_date = anniversary.date.replace(year=anniversary.date.year + 1)
     next_diff = next_date - today
-    return f'{name}まで、あと {next_diff.days} 日'
+    return f'{anniversary.name}まで、あと {next_diff.days} 日'
 
 
-def build_first_texts(anniversaries: list) -> str:
+def build_first_texts(anniversaries: [Anniversary]) -> str:
     messages = []
     for anniversary in anniversaries:
         message = build_first_text(anniversary)
@@ -40,7 +36,7 @@ def build_first_texts(anniversaries: list) -> str:
     return '\n'.join(messages)
 
 
-def build_next_texts(anniversaries) -> str:
+def build_next_texts(anniversaries: [Anniversary]) -> str:
     messages = []
     for anniversary in anniversaries:
         message = build_next_text(anniversary)
@@ -50,7 +46,7 @@ def build_next_texts(anniversaries) -> str:
     return '\n'.join(messages)
 
 
-def build_blocks(anniversaries) -> list:
+def build_blocks(anniversaries: [Anniversary]) -> list:
     parser = argparse.ArgumentParser()
     parser.add_argument("type")
     args = parser.parse_args()
@@ -78,7 +74,7 @@ def build_blocks(anniversaries) -> list:
 
 def main() -> None:
     anniversaries_file = open('anniversaries.json', 'r')
-    anniversaries = json.load(anniversaries_file)
+    anniversaries = json.load(anniversaries_file, object_hook=Anniversary)
 
     webhook = WebhookClient(settings.WEBHOOK_URL)
 
