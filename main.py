@@ -43,7 +43,7 @@ def build_first_texts(anniversaries: list) -> str:
 def build_next_texts(anniversaries) -> str:
     messages = []
     for anniversary in anniversaries:
-        message = build_first_text(anniversary)
+        message = build_next_text(anniversary)
         messages.append(message)
     messages.append('です :kissing_heart:')
 
