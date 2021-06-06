@@ -1,3 +1,4 @@
+import argparse
 import json
 import datetime
 
@@ -5,36 +6,73 @@ import settings
 from slack_sdk.webhook import WebhookClient
 
 
-def build_text(anniversary) -> str:
+def build_first_text(anniversary) -> str:
     today = datetime.date.today()
     name = anniversary["name"]
     tmp_date = datetime.datetime.strptime(anniversary["date"], '%Y-%m-%d')
     date = datetime.date(tmp_date.year, tmp_date.month, tmp_date.day)
     diff = today - date
+    return f'{name}から {diff} 日'
+
+
+def build_next_text(anniversary) -> str:
+    today = datetime.date.today()
+    name = anniversary["name"]
+    tmp_date = datetime.datetime.strptime(anniversary["date"], '%Y-%m-%d')
+    date = datetime.date(tmp_date.year, tmp_date.month, tmp_date.day)
     next_date = date.replace(year=date.year + 1)
     next_diff = next_date - today
+    return f'{name}まで、あと {next_diff} 日'
 
-    return f">>>*{name}* ( {date.strftime('%Y-%m-%d')} )\n\n経過日数\t{diff.days}日\n\n残り日数\t{next_diff.days}日"
+
+def build_first_texts(anniversaries: list) -> str:
+    messages = []
+    for anniversary in anniversaries:
+        message = build_first_text(anniversary)
+        messages.append(message)
+
+    messages.append('''\
+がたちました :partying_face:
+
+今日も両想いです :smiling_face_with_3_hearts:
+''')
+
+    return '\n'.join(messages)
+
+
+def build_next_texts(anniversaries) -> str:
+    messages = []
+    for anniversary in anniversaries:
+        message = build_first_text(anniversary)
+        messages.append(message)
+    messages.append('です :kissing_heart:')
+
+    return '\n'.join(messages)
 
 
 def build_blocks(anniversaries) -> list:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("type")
+    args = parser.parse_args()
+    command_type = args.type
+
+    message: str
+    if command_type == 'first':
+        message = build_first_texts(anniversaries)
+    elif command_type == 'next':
+        message = build_next_texts(anniversaries)
+    else:
+        message = 'キーが間違っています。'
+
     blocks = [
         {
-            "type": "image",
-            "image_url": "https://i.ytimg.com/vi/Mg8WdPJ_ATE/maxresdefault.jpg",
-            "alt_text": "anniversary"
-        }
-    ]
-    for anniversary in anniversaries:
-        text = {
             "type": "section",
             "text": {
-                "text": f"{build_text(anniversary)}",
+                "text": f"{message}",
                 "type": "mrkdwn"
             }
         }
-        blocks.append(text)
-
+    ]
     return blocks
 
 

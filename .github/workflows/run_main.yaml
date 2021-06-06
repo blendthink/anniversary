@@ -32,4 +32,4 @@ jobs:
       - name: run main
         env:
           TZ: 'Asia/Tokyo'
-        run: python main.py
+        run: python main.py "${{ github.event.inputs.type }}"
