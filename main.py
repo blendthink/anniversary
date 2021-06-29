@@ -1,12 +1,12 @@
 import argparse
 import datetime
-import json
+from typing import List
 
+import pydantic
 from slack_sdk.webhook import WebhookClient
 
 import settings
 from data import Anniversary
-from decoder import decode_anniversary
 
 
 def build_first_text(anniversary: Anniversary) -> str:
@@ -74,9 +74,7 @@ def build_blocks(anniversaries: [Anniversary]) -> list:
 
 
 def main() -> None:
-    anniversaries_file = open('anniversaries.json', 'r')
-    anniversaries: [Anniversary] = json.load(anniversaries_file, object_hook=decode_anniversary)
-
+    anniversaries: List[Anniversary] = pydantic.parse_file_as(List[Anniversary], 'anniversaries.json')
     webhook = WebhookClient(settings.WEBHOOK_URL)
 
     if not anniversaries:
